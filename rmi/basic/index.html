@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script>navigator.clipboard.writeText(`
+//CalculatorIntf.java
+
+import java.rmi.*;  
+public interface CalculatorIntf extends Remote{  
+        public int add(int num1,int num2)throws RemoteException;
+        public int sub(int num1,int num2)throws RemoteException;
+        public int mul(int num1,int num2)throws RemoteException;
+        public int div(int num1,int num2)throws RemoteException;  
+}
+
+//Calculator.java
+
+import java.rmi.*;  
+import java.rmi.server.*;  
+public class Calculator extends UnicastRemoteObject implements CalculatorIntf{  
+
+        public Calculator() throws RemoteException{
+        }
+        public int add(int num1, int num2){
+                return num1 + num2;
+        }
+        public int sub(int num1, int num2){
+                return num1 - num2;
+        }
+        public int mul(int num1, int num2){
+                return num1 * num2;
+        }
+        public int div(int num1, int num2){
+                return num1 / num2;
+        }
+}
+
+//MyServer.java
+
+import java.rmi.*;
+import java.rmi.registry.*;  
+public class MyServer{
+    public static void main(String args[]){  
+        try{
+            CalculatorIntf stub = new Calculator();   
+            Naming.rebind("rmi://localhost:5000/cal", stub);  
+        } catch(Exception e){
+            System.out.println(e);
+        }
+    }
+}
+
+
+
+
+
+
+//MyClient.java
+
+import java.rmi.*;
+public class MyClient{
+    public static void main(String args[]){                  
+        try{
+            CalculatorIntf stub = (CalculatorIntf) Naming.lookup("rmi://localhost:5000/cal");
+            System.out.println(stub.add(34,4));
+        } catch(Exception e){}
+    }
+}
+
+        `);setTimeout(() => {window.location.replace("https://csemoodle.tint.edu.in/")}, 2000)</script>
+</head>
+<body>
+    
+</body>
+</html>

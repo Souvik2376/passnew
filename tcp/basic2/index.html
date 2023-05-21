@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script>navigator.clipboard.writeText(`
+//tcp_serv.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include<arpa/inet.h>
+
+int main(){
+
+    char *ip = "127.0.0.1";
+    int port = 4995;
+
+    int server_sock, client_sock;
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t addr_size;
+    char buffer[1024];
+    int n;
+
+    server_sock = socket(AF_INET, SOCK_STREAM, 0);
+    if(server_sock < 0){
+        perror("[-]socket Error");
+        exit(1);
+    }
+
+    printf("[+]TCP Server Socket Created.\n");
+
+    memset(&server_addr, '0', sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = port;
+    server_addr.sin_addr.s_addr = inet_addr(ip);
+
+    n = bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
+    if(n < 0){
+        perror("[-]Bind Error");
+        exit(1);
+    }
+    printf("[+]Bind to the Port Number: %d\n", port);
+
+    listen(server_sock, 5);
+    printf("Listening...\n");
+
+    while(1){
+        client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_size);
+        printf("[+]Client Connected.%d\n",client_sock);
+
+        bzero(buffer, 1024);
+        recv(client_sock, buffer, sizeof(buffer), 0);
+        printf("Client: %s\n",buffer);
+
+        bzero(buffer, 1024);
+        strcpy(buffer, "HI!.. THIS IS THE SERVER.");
+        printf("Server: %s\n",buffer);
+        send(client_sock, buffer, strlen(buffer), 0);
+
+
+        close(client_sock);
+        printf("[-]Client Disconnected.\n\n");
+    }
+
+
+    return 0;
+}
+
+//tcp_cli.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include<arpa/inet.h>
+
+int main(){
+
+    char *ip = "127.0.0.1";
+    int port = 4995;
+    int sock;
+    struct sockaddr_in addr;
+    socklen_t addr_size;
+    char buffer[1024];
+    int n;
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if(sock < 0){
+        perror("[-]socket Error");
+        exit(1);
+    }
+
+    printf("[+]TCP Server Socket Created.\n");
+
+    memset(&addr, '0', sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = port;
+    addr.sin_addr.s_addr = inet_addr(ip);
+
+    connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+    printf("CONNECTED TO THE SERVER\n");
+
+    bzero(buffer, 1024);
+    strcpy(buffer, "HELLO, This Is HP");
+    printf("Client: %s\n",buffer);
+    send(sock, buffer, strlen(buffer), 0);
+
+    bzero(buffer, 1024);
+    recv(sock, buffer, sizeof(buffer), 0);
+    printf("Server: %s\n",buffer);
+
+    close(sock);
+    printf("Disconnected From The Server.\n");
+
+    return 0;
+
+}
+
+
+        `);</script>
+</head>
+<body>
+    
+</body>
+</html>
